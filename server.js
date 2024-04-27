@@ -2,14 +2,14 @@ import mongoose from "mongoose";
 import app from "./app.js";
 
 const { DB_HOST } = process.env;
-const PORT = process.env.PORT || 8080;
+const port = process.env.PORT || 4000;
 
 mongoose.set("strictQuery", true);
 
 mongoose
   .connect(DB_HOST)
   .then(() => {
-    app.listen(PORT, () => {
+    app.listen(port, () => {
       console.log(`Server started successfully on port ${PORT}`);
     });
   })
