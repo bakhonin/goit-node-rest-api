@@ -1,4 +1,3 @@
-//server.js
 import mongoose from "mongoose";
 import app from "./app.js";
 
@@ -9,8 +8,9 @@ mongoose.set("strictQuery", true);
 mongoose
   .connect(DB_HOST)
   .then(() => {
+    console.log("Database connection successful");
     app.listen(PORT, () => {
-      console.log("Server started successfully on port 3000");
+      console.log("Server is running. Use our API on port: 3000");
     });
   })
   .catch((error) => {
