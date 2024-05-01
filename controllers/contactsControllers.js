@@ -63,7 +63,7 @@ export const createContact = async (req, res, next) => {
 
 export const updateContact = async (req, res, next) => {
   try {
-    const { error } = updateFavoriteSchema.validate(req.body);
+    const { error } = updateContactSchema.validate(req.body);
     if (error) {
       throw HttpError(400, error.message);
     }
@@ -84,7 +84,7 @@ export const updateContact = async (req, res, next) => {
 export const updateStatus = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { error } = updateContactSchema.validate(req.body);
+    const { error } = updateFavoriteSchema.validate(req.body);
     if (error) {
       throw HttpError(400, error.message);
     }
