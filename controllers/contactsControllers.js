@@ -14,9 +14,15 @@ import {
 } from "../models/contact.js";
 
 export const getAllContacts = async (req, res, next) => {
-  const getListContacts = await listContacts();
   try {
-    res.status(200).json(getListContacts);
+    const { _id: owner } = req.user;
+    const { page = 1, limit = 20, favorite } = req.query;
+    const query = { owner };
+    if (favorite) {
+      query.favorite = favorite === "true";
+    }
+    const skip = (page - 1) * limit;
+    res.status(200).json(await listContacts(query, skip, limit));
   } catch (error) {
     next(error);
   }
@@ -54,7 +60,8 @@ export const createContact = async (req, res, next) => {
     if (error) {
       throw HttpError(400, error.message);
     }
-    const result = await addContact(req.body);
+    const { _id: owner } = req.user;
+    const result = await addContact({ ...req.body, owner });
     res.status(201).json(result);
   } catch (error) {
     next(error);

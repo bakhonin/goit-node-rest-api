@@ -1,7 +1,10 @@
 import { Contact } from "../models/contact.js";
 
-export const listContacts = async () => {
-  const data = await Contact.find({}, "-createdAt -updatedAt");
+export const listContacts = async (query, skip, limit) => {
+  const data = await Contact.find(query, "-createdAt -updatedAt", {
+    skip,
+    limit,
+  }).populate("owner", "email subscription");
   return data;
 };
 
