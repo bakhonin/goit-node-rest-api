@@ -1,5 +1,6 @@
 import Joi from "joi";
 import { Schema, model } from "mongoose";
+
 import handleMongooseError from "../middlewares/handleMongooseError.js";
 
 const contactSchema = new Schema(
@@ -19,6 +20,11 @@ const contactSchema = new Schema(
     favorite: {
       type: Boolean,
       default: false,
+    },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+      required: true,
     },
   },
   { versionKey: false, timestamps: true }
