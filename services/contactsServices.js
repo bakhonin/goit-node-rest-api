@@ -9,7 +9,7 @@ export const listContacts = async (query, skip, limit) => {
 };
 
 export const getContactById = async (id, owner) => {
-  const result = await Contact.findById({ _id: id, owner });
+  const result = await Contact.findOne({ _id: id, owner });
   return result || null;
 };
 
@@ -35,7 +35,7 @@ export const updateContactId = async (id, data) => {
 
 export const updateStatusContact = async (id, owner, body) => {
   const { favorite } = body;
-  const updatedContact = await Contact.findByIdAndUpdate(
+  const updatedContact = await Contact.findOneAndUpdate(
     { _id: id, owner },
     { favorite },
     { new: true }
