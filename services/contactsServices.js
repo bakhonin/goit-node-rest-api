@@ -8,13 +8,13 @@ export const listContacts = async (query, skip, limit) => {
   return data;
 };
 
-export const getContactById = async (id) => {
-  const result = await Contact.findById(id);
+export const getContactById = async (id, owner) => {
+  const result = await Contact.findById({ _id: id, owner });
   return result || null;
 };
 
-export const removeContact = async (id) => {
-  const contact = await Contact.findOneAndDelete({ _id: id });
+export const removeContact = async (id, owner) => {
+  const contact = await Contact.findOneAndDelete({ _id: id, owner });
   if (!contact) {
     return null;
   }
@@ -27,14 +27,16 @@ export const addContact = async (data) => {
 };
 
 export const updateContactId = async (id, data) => {
-  const contact = await Contact.findByIdAndUpdate(id, data, { new: true });
+  const contact = await Contact.findOneAndUpdate({ _id: id, owner }, data, {
+    new: true,
+  });
   return contact;
 };
 
-export const updateStatusContact = async (contactId, body) => {
+export const updateStatusContact = async (id, owner, body) => {
   const { favorite } = body;
   const updatedContact = await Contact.findByIdAndUpdate(
-    contactId,
+    { _id: id, owner },
     { favorite },
     { new: true }
   );

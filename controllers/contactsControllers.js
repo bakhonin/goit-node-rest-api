@@ -31,7 +31,8 @@ export const getAllContacts = async (req, res, next) => {
 export const getOneContact = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const getOneId = await getContactById(id);
+    const { _id: owner } = req.user;
+    const getOneId = await getContactById(id, owner);
     if (!getOneId) {
       throw HttpError(404, "Not found");
     }
@@ -44,7 +45,8 @@ export const getOneContact = async (req, res, next) => {
 export const deleteContact = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const deleteId = await removeContact(id);
+    const { _id: owner } = req.user;
+    const deleteId = await removeContact(id, owner);
     if (!deleteId) {
       throw HttpError(404, "Not Found");
     }
@@ -78,7 +80,8 @@ export const updateContact = async (req, res, next) => {
       throw HttpError(400, "Body must have at least one field");
     }
     const { id } = req.params;
-    const result = await updateContactId(id, req.body);
+    const { _id: owner } = req.user;
+    const result = await updateContactId(id, owner, req.body);
     if (!result) {
       throw HttpError(404, "Not Found");
     }
@@ -96,7 +99,8 @@ export const updateStatus = async (req, res, next) => {
       throw HttpError(400, error.message);
     }
     const { favorite } = req.body;
-    const result = await updateStatusContact(id, { favorite });
+    const { _id: owner } = req.user;
+    const result = await updateStatusContact(id, owner, { favorite });
     if (!result) {
       throw HttpError(404, "Not Found");
     }
