@@ -1,10 +1,19 @@
+import Jimp from "jimp";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import gravatar from "gravatar";
+import path from "node:path";
+import { fileURLToPath } from "url";
+import fs from "node:fs/promises";
 
 import { User } from "../models/user.js";
 import HttpError from "../helpers/HttpError.js";
 
 const { SECRET_KEY } = process.env;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const avatarsDir = path.join(__dirname, "..", "public", "avatars");
 
 export const registerUser = async (req, res, next) => {
   const { email, password } = req.body;
@@ -15,7 +24,12 @@ export const registerUser = async (req, res, next) => {
 
   try {
     const hashPassword = await bcrypt.hash(password, 10);
-    const newUser = await User.create({ ...req.body, password: hashPassword });
+    const avatarURL = gravatar.url(email);
+    const newUser = await User.create({
+      ...req.body,
+      password: hashPassword,
+      avatarURL,
+    });
     res.status(201).json({
       email: newUser.email,
       subscription: newUser.subscription,
@@ -97,9 +111,32 @@ export const updateSubscription = async (req, res, next) => {
       { new: true }
     );
     if (!updatedUser) {
-      throw HttpError(404, "User not found");
+      next(HttpError(404, "User not found"));
     }
     res.status(200).json(updatedUser);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateAvatar = async (req, res, next) => {
+  try {
+    const { _id } = req.user;
+    const user = await User.findById(_id);
+    const { path: tempUpload, originalname } = req.file;
+    const fileName = `${_id}_${originalname}`;
+    const resultUpload = path.join(avatarsDir, fileName);
+    if (!user) {
+      return next(HttpError(401, "Not authorized"));
+    }
+    await fs.rename(tempUpload, resultUpload);
+    const image = await Jimp.read(resultUpload);
+    await image.resize(250, 250).writeAsync(resultUpload);
+    const avatarURL = path.join(fileName);
+    await User.findByIdAndUpdate(_id, { avatarURL });
+    res.status(200).json({
+      avatarURL,
+    });
   } catch (error) {
     next(error);
   }
