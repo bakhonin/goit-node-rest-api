@@ -26,7 +26,7 @@ export const addContact = async (data) => {
   return newContact;
 };
 
-export const updateContactId = async (id, data) => {
+export const updateContactId = async (id, owner, data) => {
   const contact = await Contact.findOneAndUpdate({ _id: id, owner }, data, {
     new: true,
   });
